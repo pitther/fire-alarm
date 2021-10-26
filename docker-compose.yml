@@ -1,14 +1,14 @@
 version: "3"
-
 services:
   backend:
     build: ./backend
     ports:
       - "5001:5000"
-
   frontend:
-    build: ./frontend
+    build: ./frontend/fire-alarm
     ports:
       - "4001:3000"
+
+
 
   
