@@ -9,9 +9,17 @@ const sendPostRequest = async (url, data) => {
         });
         console.log(rawResponse);
         const jsonResponse = await rawResponse.json();
+        if (rawResponse.status !== 200 || jsonResponse.error){
+            jsonResponse.error = true;
+            jsonResponse.msg = jsonResponse.msg?jsonResponse.msg:'Error sending request to server.';
+        } else {
+            jsonResponse.error = false;
+        }
+
         return jsonResponse;
     } catch (e) {
         console.error('Error sending pos req: ',e)
+        return {error:true,msg:'Error sending request to server.'}
     }
 
 }
