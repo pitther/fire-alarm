@@ -41,7 +41,7 @@ h1 {
   margin: 0 auto;
 }
 
-.control-container{
+.control-container .data-container{
   margin-top: 10px;
   margin-bottom: 30px;
 }
@@ -63,23 +63,24 @@ h1 {
 
 hr{
   border: none;
-
   border-top: 1.5px solid grey;
 }
 
 .control-hr{
-  margin: 15px 0px;
+  margin: 15px 0;
   border-top: 2px dashed #91d5ff;
 }
 
-.control-section-header{
+.data-hr{
+  margin: 15px 0;
+  border-top: 2px dashed rgb(255, 229, 143);
+}
+
+.control-section-header, .data-section-header{
   text-align: center;
   color: #ff6060;
 }
 
-{
-  color: #3793ff
-}
 #control-spin{
   position: absolute;
   z-index: 5000;
@@ -95,22 +96,26 @@ hr{
   width: 100%;
 }
 
-#control-parameters-pre{
-  max-height: 150px;
+#control-parameters-pre, .data-parameters-pre{
+  max-height: 250px;
   /*background: #e6f7ff;*/
 
   /*border: 1px solid #91d5ff;*/
 }
 
-.control-parameters-block{
+.control-parameters-block, .data-parameters-block{
   margin: 10px;
   border: 1px solid #91d5ff;
   padding: 20px;
   background: #e6f7ff;
 }
 
-#stage{
-  box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+.data-parameters-block{
+  border-color: rgb(255, 229, 143);
+  background: rgb(255, 251, 230);
+}
 
+#stage{
+  box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2);
 }
 

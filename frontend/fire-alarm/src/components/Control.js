@@ -1,13 +1,7 @@
 import React, {useContext, useState} from 'react';
-import {Radio, Button, Col, InputNumber, Slider, Row, Spin, Alert, message, Switch, Space} from 'antd';
+import {Button, Col, InputNumber, message, Radio, Row, Slider, Space, Spin} from 'antd';
 import {sendPostRequest} from "../data/request";
-import {
-    BorderBottomOutlined,
-    DashboardFilled,
-    FireOutlined,
-    FormatPainterFilled,
-    LoadingOutlined
-} from '@ant-design/icons';
+import {DashboardFilled, FireOutlined, FormatPainterFilled, SoundFilled} from '@ant-design/icons';
 import {ParametersContext} from "../context/ParametersContext";
 import Checkbox from "antd/es/checkbox/Checkbox";
 
@@ -15,10 +9,8 @@ import Checkbox from "antd/es/checkbox/Checkbox";
 const Control = () => {
     const {
         setServerResponseData,
-        serverResponseData,
         fireExpectancyArray,
         importanceArray,
-        WIDTH, HEIGHT,
         cellCount, setCellCount,
         xink,
         setXink,
@@ -26,7 +18,9 @@ const Control = () => {
         yink,
         noiseType, setNoiseType,
         render, setRender,
-        resultSuccessful
+        resultSuccessful,
+        alarmCount, setAlarmCount,
+        alarmRadius, setAlarmRadius
     } = useContext(ParametersContext);
 
     const [loading, setLoading] = useState(false);
@@ -36,11 +30,21 @@ const Control = () => {
 
         message.info('Data has been sent to server...');
 
-        const res = await sendPostRequest('http://localhost:3002/sendData', {fireExpectancyArray, importanceArray});
+        const res = await sendPostRequest('http://localhost:3002/sendData', {
+            fireExpectancyArray,
+            importanceArray,
+            alarm: {
+                count: alarmCount,
+                radius: alarmRadius
+            }
+        });
 
         setLoading(false);
 
-        if (res.error) {
+        if (res.error || !res.alarms || !res.alarms.length) {
+            if (!res.msg) {
+                res.msg = 'Bad data from server';
+            }
             message.error(res.msg);
             return;
         }
@@ -54,6 +58,7 @@ const Control = () => {
     const fireIcon = <FireOutlined style={{fontSize: 15}}/>;
     const noiseIcon = <DashboardFilled style={{fontSize: 15}}/>;
     const canvasIcon = <FormatPainterFilled style={{fontSize: 15}}/>;
+    const alarmIcon = <SoundFilled style={{fontSize: 15}}/>;
 
     const onChangeXINK = value => {
         setXink(value);
@@ -64,6 +69,14 @@ const Control = () => {
         setYink(value);
         setXink(value);
     };
+
+    const onChangeAlarmRadius = value => {
+        setAlarmRadius(value);
+    };
+
+    const onChangeAlarmCount = value => {
+        setAlarmCount(value);
+    }
 
     const onChangeCellCount = value => {
         setCellCount(value);
@@ -170,6 +183,62 @@ const Control = () => {
                 </div>
                 <div>
                     <hr className={'control-hr'}/>
+                    <h3 className={'control-section-header'}>Alarm's {alarmIcon}</h3>
+                    <Row>
+                        <Col span={24} style={{textAlign: 'center'}}>
+                            <div style={{textAlign: 'center', marginLeft: '40px', marginRight: '40px'}}>
+                                <h4>Count</h4>
+                                <Row>
+                                    <Col span={16} style={{textAlign: 'center'}}>
+                                        <Slider
+                                            min={1}
+                                            max={100}
+                                            onChange={onChangeAlarmCount}
+                                            value={typeof alarmCount === 'number' ? alarmCount : 0}
+                                        />
+                                    </Col>
+                                    <Col span={8} style={{textAlign: 'center'}}>
+                                        <InputNumber
+                                            min={1}
+                                            max={100}
+                                            style={{margin: '0 16px'}}
+                                            value={alarmCount}
+                                            onChange={onChangeAlarmCount}
+                                        />
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col span={24} style={{textAlign: 'center'}}>
+                            <div style={{textAlign: 'center', marginLeft: '40px', marginRight: '40px'}}>
+                                <h4>Radius</h4>
+                                <Row>
+                                    <Col span={16} style={{textAlign: 'center'}}>
+                                        <Slider
+                                            min={1}
+                                            max={100}
+                                            onChange={onChangeAlarmRadius}
+                                            value={typeof alarmRadius === 'number' ? alarmRadius : 0}
+                                        />
+                                    </Col>
+                                    <Col span={8} style={{textAlign: 'center'}}>
+                                        <InputNumber
+                                            min={1}
+                                            max={100}
+                                            style={{margin: '0 16px'}}
+                                            value={alarmRadius}
+                                            onChange={onChangeAlarmRadius}
+                                        />
+                                    </Col>
+                                </Row>
+                            </div>
+                        </Col>
+                    </Row>
+                </div>
+                <div>
+                    <hr className={'control-hr'}/>
                     <h3 className={'control-section-header'}>Noise settings {noiseIcon}</h3>
                     <Row>
                         <Col span={24} style={{textAlign: 'center'}}>
@@ -229,18 +298,6 @@ const Control = () => {
                             </Col>
                         </Row>
                     </div>
-                </div>
-                <hr className={'control-hr'}/>
-                <div>
-                <pre id={'control-parameters-pre'}>{
-                    `${JSON.stringify({
-                        xink,
-                        yink,
-                        WIDTH,
-                        HEIGHT,
-                        cellCount
-                    }, null, 2)}`}
-                </pre>
                 </div>
             </div>
         </div>

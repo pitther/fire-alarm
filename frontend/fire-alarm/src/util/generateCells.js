@@ -1,17 +1,15 @@
 import perlin from 'noisejs';
 
-const generateCells = (cellSizeX, cellSizeY, xink, yink, noiseType) => {
+const generateCells = (cellCount, xink, yink, noiseType) => {
     const noise = new perlin.Noise(Math.random());
-    const WIDTH = 400;
-    const HEIGHT = 400;
     const cells = [];
-    for (let i = 0; i < WIDTH/cellSizeX; i++) {
+    for (let i = 0; i < cellCount; i++) {
         const row = [];
-        for (let j = 0; j < HEIGHT/cellSizeY; j++) {
+        for (let j = 0; j < cellCount; j++) {
             if (noiseType === 'perlin') {
-                row.push(noise.perlin2(i / xink, j / yink));
+                row.push((noise.perlin2(i / xink, j / yink) + 1) / 2);
             } else {
-                row.push(noise.simplex2(i / xink, j / yink));
+                row.push((noise.simplex2(i / xink, j / yink) + 1) / 2);
             }
         }
         cells.push(row);

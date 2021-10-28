@@ -1,14 +1,22 @@
-import React, {useContext, useEffect} from 'react';
-import {Graphics, Stage, Container, Sprite, useTick, useReducer, useRef} from '@inlet/react-pixi';
+import React, {useContext, useState} from 'react';
+import {Graphics, Stage} from '@inlet/react-pixi';
 import {pickRGB, rgbToHex} from "../util/colors";
 import {ParametersContext} from "../context/ParametersContext";
-import {Badge} from "antd";
-//russkoe pole
-const Canvas = () => {
-    const {resultSuccessful,WIDTH, HEIGHT, cellCount, fireExpectancyArray, render, importanceArray} = useContext(ParametersContext);
+import {Badge, message} from "antd";
 
-    const cellSizeX = WIDTH / cellCount;
-    const cellSizeY = HEIGHT / cellCount;
+const Canvas = () => {
+    const {
+        resultSuccessful,
+        WIDTH,
+        HEIGHT,
+        cellCount,
+        fireExpectancyArray,
+        render,
+        importanceArray,
+        cellSizeX, cellSizeY,
+        alarmArray
+    } = useContext(ParametersContext);
+
 
     const draw = React.useCallback(g => {
         g.clear();
@@ -23,10 +31,10 @@ const Canvas = () => {
                 let importanceWeight = 0;
 
                 if (render.fireExpectancy) {
-                    fireWeight = (cell + 1) / 2;
+                    fireWeight = cell;
                 }
                 if (render.importance) {
-                    importanceWeight += (importanceArray[i][j] + 1) / 2;
+                    importanceWeight += importanceArray[i][j];
                 }
                 if (render.fireExpectancy && render.importance) {
                     weight += fireWeight / 2 + importanceWeight / 2;
@@ -35,7 +43,7 @@ const Canvas = () => {
                 }
 
                 if (render.fireExpectancy || render.importance) {
-                    const pickedGradient = pickRGB(colorGreen, colorRed, weight);
+                    const pickedGradient = pickRGB(colorRed, colorGreen, weight);
 
                     hex = rgbToHex(pickedGradient[0], pickedGradient[1], pickedGradient[2]);
 
@@ -47,16 +55,6 @@ const Canvas = () => {
 
             });
         });
-
-        const alarmArray = [{
-            x: 20,
-            y: 15,
-            r: 10
-        }, {
-            x: 15,
-            y: 25,
-            r: 10
-        }];
 
         if (render.alarms) {
             alarmArray.forEach(alarm => {
@@ -74,19 +72,42 @@ const Canvas = () => {
             });
         }
 
-    }, [fireExpectancyArray, cellCount, WIDTH, HEIGHT, render]);
+    }, [alarmArray, importanceArray, fireExpectancyArray, cellCount, WIDTH, HEIGHT, render, cellSizeX, cellSizeY]);
 
     const onClick = (event) => {
-        console.log(event.nativeEvent.offsetX, event.nativeEvent.offsetY);
+        const x = event.nativeEvent.offsetX;
+        const y = event.nativeEvent.offsetY;
+        const xIndex = Math.floor(x / cellSizeX);
+        const yIndex = Math.floor(y / cellSizeY)
+        const cellFireExpectancy = fireExpectancyArray[xIndex][yIndex];
+        const cellImportance = importanceArray[xIndex][yIndex];
+
+        message.info(`FireExp: ${cellFireExpectancy.toFixed(3)}, Importance: ${cellImportance.toFixed(3)}`);
+    }
+
+    const [canvasHover, setCanvasHover] = useState(false);
+
+    const onCanvasOver = () => {
+        if (canvasHover !== true) {
+            setCanvasHover(true);
+        }
+    }
+    const onCanvasOut = () => {
+        if (canvasHover !== false) {
+            setCanvasHover(false);
+        }
     }
 
     return (
         <div id='canvas-container'>
-            <Badge.Ribbon placement={'start'} color={resultSuccessful?'#87d068':'#f50'} text={resultSuccessful?'Ready':'Not ready'}>
-            <Stage id={'stage'} width={WIDTH} height={HEIGHT} options={{backgroundAlpha: 0.2}}
-                   onClick={e => onClick(e)}>
+            <Badge.Ribbon style={{display: canvasHover ? 'none' : 'block'}} id={'canvas-ribbon'} placement={'start'}
+                          color={resultSuccessful ? '#87d068' : '#f50'}
+                          text={resultSuccessful ? 'Ready' : 'Not ready'}>
+                <Stage onMouseOut={onCanvasOut} onMouseOver={onCanvasOver} id={'stage'} width={WIDTH} height={HEIGHT}
+                       options={{backgroundAlpha: 0.2}}
+                       onClick={e => onClick(e)}>
                     <Graphics draw={draw}/>
-            </Stage>
+                </Stage>
             </Badge.Ribbon>
         </div>
     );
