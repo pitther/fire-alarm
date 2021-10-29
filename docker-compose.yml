@@ -8,7 +8,5 @@ services:
     build: ./frontend/fire-alarm
     ports:
       - "4001:3000"
-
-
-
-  
+    environment:
+     - NODE_OPTIONS=--openssl-legacy-provider
