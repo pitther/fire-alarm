@@ -1,84 +1,126 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { Graphics, Stage } from '@inlet/react-pixi';
 import { pickRGB, rgbToHex } from '../util/colors';
 import { ParametersContext } from '../context/ParametersContext';
 import { Badge, message } from 'antd';
-import { useAlarms, useCanvasSize, useCell, useCellsData, useMethodResult, useRender } from '../hooks/Parameters';
+import {
+  CANVAS_GRADIENT_COLOR_1,
+  CANVAS_GRADIENT_COLOR_2,
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH, SUCCESSFUL_COLOR,
+  UNSUCCESSFUL_COLOR,
+} from '../constants/constants';
 
 const Canvas = () => {
-  const { successful } = useMethodResult();
-  const { width, height } = useCanvasSize();
-  const { sizeX, sizeY } = useCell();
+  const {
+    alarms,
+    cell,
+    cellsData,
+    methodResult,
+    render,
+  } = useContext(ParametersContext);
 
+  const { successful } = methodResult;
+  const { sizeX, sizeY } = cell;
   const {
     fireExpectancy,
     importance,
     alarm,
     grid,
-  } = useRender();
+  } = render;
 
-  const cellCount = useCell().count;
-  const { alarms, radius } = useAlarms();
-  const { fireExpectancies, importances } = useCellsData();
+  const { fireExpectancies, importances } = cellsData;
 
+  const drawFigure = ({ graphic, figureName, lineStyle, fillStyle, x, y, sizeX, sizeY }) => {
+    if (!graphic || !figureName || (!sizeX && !sizeY) || !fillStyle) return;
+
+    graphic.lineStyle(lineStyle || 0);
+    graphic.beginFill(fillStyle.hexColor || 0, fillStyle.alpha || 0);
+
+    if (figureName === 'rect') {
+      graphic.drawRect(x, y, sizeX, sizeY);
+    } else if (figureName === 'circle') {
+      graphic.drawCircle(x, y, sizeX || sizeY);
+    }
+
+    graphic.endFill();
+  };
 
   const draw = React.useCallback(g => {
     g.clear();
     fireExpectancies.forEach((row, i) => {
-
       row.forEach((cell, j) => {
-        let hex;
-        const colorGreen = [0, 255, 0];
-        const colorRed = [255, 0, 0];
-        let weight = 0;
-        let fireWeight = cell;
-        let importanceWeight = importances[i][j];
+        let fireWeight = fireExpectancy ? cell : 0;
+        let importanceWeight = importance ? importances[i][j] : 0;
+        let weight = fireWeight + importanceWeight;
 
-        if (fireExpectancy){
-          weight = fireWeight;
-        } else if (importance){
-          weight = importanceWeight;
-        }
+
         if (fireExpectancy && importance) {
-          weight += fireWeight / 2 + importanceWeight / 2;
+          weight = fireWeight / 2 + importanceWeight / 2;
         }
 
         if (fireExpectancy || importance) {
-          const pickedGradient = pickRGB(colorRed, colorGreen, weight);
+          const pickedGradient = pickRGB(CANVAS_GRADIENT_COLOR_2, CANVAS_GRADIENT_COLOR_1, weight);
+          const fillHex = rgbToHex(...pickedGradient);
 
-          hex = rgbToHex(...pickedGradient);
-
-          g.lineStyle({ alignment: 0, color: 0xd3d3d3, width: grid ? 0.5 : 0 });
-          g.beginFill(hex, 1);
-          g.drawRect(i * sizeX, j * sizeY, sizeX, sizeY);
-          g.endFill();
+          drawFigure({
+            graphic: g,
+            figureName: 'rect',
+            lineStyle: {
+              alignment: 0,
+              color: '0xd3d3d3',
+              width: grid ? 0.5 : 0,
+            },
+            fillStyle: {
+              hexColor: fillHex,
+              alpha: 1,
+            },
+            x: sizeX * i,
+            y: sizeY * j,
+            sizeY,
+            sizeX,
+          });
         }
 
       });
     });
 
     if (alarm) {
-      alarms.forEach(alarm => {
-        g.lineStyle(0);
-        g.beginFill(0xffff0b, 0.5);
-        g.drawCircle(sizeX * alarm.x + sizeX / 2, sizeY * alarm.y + sizeY / 2, (radius * sizeX) - sizeX / 2);
-        g.endFill();
+      alarms?.alarms.forEach(alarm => {
+        drawFigure({
+          graphic: g,
+          figureName: 'circle',
+          fillStyle: {
+            hexColor: '0xffff0b',
+            alpha: 0.5,
+          },
+          x: sizeX * alarm.x + sizeX / 2,
+          y: sizeY * alarm.y + sizeY / 2,
+          sizeX: (alarm.r * sizeX) - sizeX / 2,
+        });
       });
 
-      alarms.forEach(alarm => {
-        g.lineStyle(1, 0xfffff, 1);
-        g.beginFill(0x3793ff, 1);
-        g.drawCircle(sizeX * alarm.x + sizeX / 2, sizeY * alarm.y + sizeY / 2, sizeX / 2);
-        g.endFill();
+      alarms?.alarms.forEach(alarm => {
+        drawFigure({
+          graphic: g,
+          figureName: 'circle',
+          lineStyle: {
+            alignment: 1,
+            color: '0xffffff',
+            width: 1,
+          },
+          fillStyle: {
+            hexColor: '0x3793ff',
+            alpha: 1,
+          },
+          x: sizeX * alarm.x + sizeX / 2,
+          y: sizeY * alarm.y + sizeY / 2,
+          sizeX: sizeX / 2,
+        });
       });
     }
 
-  }, [
-    alarms, importances, fireExpectancies,
-    cellCount,
-    width, height,
-    fireExpectancy, grid, alarm, importance,
-    sizeX, sizeY]);
+  }, [alarms?.alarms, importances, fireExpectancies, fireExpectancy, grid, alarm, importance, sizeX, sizeY]);
 
   const onClick = useCallback((event) => {
     const x = event.nativeEvent.offsetX;
@@ -91,13 +133,14 @@ const Canvas = () => {
     message.info(`FireExp: ${cellFireExpectancy.toFixed(3)}, Importance: ${cellImportance.toFixed(3)}`);
   }, [fireExpectancies, importances, sizeX, sizeY]);
 
+
   return (
     <div id='canvas-container'>
       <Badge.Ribbon id={'canvas-ribbon'} placement={'start'}
-                    color={successful ? '#87d068' : '#f50'}
+                    color={successful ? SUCCESSFUL_COLOR : UNSUCCESSFUL_COLOR}
                     text={successful ? 'Ready' : 'Not ready'}>
-        <Stage id={'stage'} width={width} height={width}
-               options={{ backgroundAlpha: 0.2 }}
+        <Stage id={'stage'} width={CANVAS_WIDTH} height={CANVAS_HEIGHT}
+               options={{ backgroundAlpha: 0.1 }}
                onClick={e => onClick(e)}>
           <Graphics draw={draw} />
         </Stage>

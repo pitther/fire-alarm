@@ -1,15 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { Button, Col, InputNumber, message, Radio, Row, Slider, Space, Spin } from 'antd';
 import { sendPostRequest } from '../data/request';
-import { DashboardFilled, FireOutlined, FormatPainterFilled, SoundFilled } from '@ant-design/icons';
 import { ParametersContext } from '../context/ParametersContext';
 import Checkbox from 'antd/es/checkbox/Checkbox';
-
-const loadingIcon = <FireOutlined style={{ fontSize: 40, color: 'red' }} spin />;
-const fireIcon = <FireOutlined style={{ fontSize: 15 }} />;
-const noiseIcon = <DashboardFilled style={{ fontSize: 15 }} />;
-const canvasIcon = <FormatPainterFilled style={{ fontSize: 15 }} />;
-const alarmIcon = <SoundFilled style={{ fontSize: 15 }} />;
+import { ALARM_ICON, CANVAS_ICON, FIRE_ICON, LOADING_ICON, NOISE_ICON } from '../constants/constants';
 
 const optionsNoise = [
   { label: 'Perlin', value: 'perlin' },
@@ -18,19 +12,12 @@ const optionsNoise = [
 
 const Control = () => {
   const {
-    setServerResponseData,
-    fireExpectancyArray,
-    importanceArray,
-    cellCount, setCellCount,
-    xink,
-    setXink,
-    setYink,
-    yink,
-    noiseType, setNoiseType,
-    render, setRender,
-    resultSuccessful,
-    alarmCount, setAlarmCount,
-    alarmRadius, setAlarmRadius,
+    noise,
+    alarms,
+    cell,
+    cellsData,
+    methodResult,
+    render
   } = useContext(ParametersContext);
 
   const [loading, setLoading] = useState(false);
@@ -41,69 +28,71 @@ const Control = () => {
     message.info('Data has been sent to server...');
 
     const res = await sendPostRequest('http://localhost:3002/sendData', {
-      fireExpectancyArray,
-      importanceArray,
+      fireExpectancies:cellsData.fireExpectancies,
+      importances:cellsData.importances,
       alarm: {
-        count: alarmCount,
-        radius: alarmRadius,
-      },
+        count: alarms.count,
+        radius: alarms.radius
+      }
     });
 
     setLoading(false);
 
     if (res.error || !res.alarms || !res.alarms.length) {
-
       message.error(res.msg || 'Bad data from server');
       return;
     }
 
     message.success('Data has been received from server.');
 
-    setServerResponseData(res);
+    methodResult.setServerResponseData(res);
   };
 
   const onChangeXINK = value => {
-    setXink(value);
-    setYink(value);
+    noise.setXink(value);
+    noise.setYink(value);
   };
 
   const onChangeYINK = value => {
-    setYink(value);
-    setXink(value);
+    noise.setYink(value);
+    noise.setXink(value);
   };
 
   const onChangeAlarmRadius = value => {
-    setAlarmRadius(value);
+    alarms.setRadius(value);
   };
 
   const onChangeAlarmCount = value => {
-    setAlarmCount(value);
+    alarms.setCount(value);
   };
 
   const onChangeCellCount = value => {
-    setCellCount(value);
+    cell.setCount(value);
   };
 
   const onChangeNoiseType = e => {
-    setNoiseType(e.target.value);
+    noise.setType(e.target.value);
   };
 
   const onChangeRender = e => {
     switch (e.target.name) {
       case 'fire_expectancy': {
-        setRender({ ...render, fireExpectancy: e.target.checked });
+        render.setFireExpectancy(e.target.checked);
         return;
       }
       case 'importance': {
-        setRender({ ...render, importance: e.target.checked });
+        render.setImportance(e.target.checked);
         return;
       }
       case 'alarm': {
-        setRender({ ...render, alarms: e.target.checked });
+        render.setAlarm(e.target.checked);
         return;
       }
       case 'grid': {
-        setRender({ ...render, grid: e.target.checked });
+        render.setGrid(e.target.checked);
+        return;
+      }
+      default: {
         return;
       }
     }
@@ -113,16 +102,16 @@ const Control = () => {
   return (
     <div className={'control-container'} style={loading ? { pointerEvents: 'none', opacity: 0.7 } : {}}>
       <div id='control-spin-container' style={{ display: loading ? 'flex' : 'none' }}>
-        <Spin id={'control-spin'} spinning={loading} indicator={loadingIcon} size={'large'} />
+        <Spin id={'control-spin'} spinning={loading} indicator={LOADING_ICON} size={'large'} />
       </div>
       <div className='control-send-block'>
         <Button id={'control-send-button'} danger type='dashed' onClick={sendDataToServer}>
-          Start algorithm {fireIcon}
+          Start algorithm {FIRE_ICON}
         </Button>
       </div>
       <div className='control-parameters-block'>
         <div>
-          <h3 className={'control-section-header'}>Canvas settings {canvasIcon}</h3>
+          <h3 className={'control-section-header'}>Canvas settings {CANVAS_ICON}</h3>
           <Row>
             <Col span={24} style={{ textAlign: 'center' }}>
               <h4>Render</h4>
@@ -139,9 +128,9 @@ const Control = () => {
                               checked={render.importance}>Importance
                     </Checkbox>
 
-                    <Checkbox name={'alarm'} onChange={onChangeRender} value={render.alarms}
-                              checked={render.alarms}
-                              disabled={!resultSuccessful}>Alarm's
+                    <Checkbox name={'alarm'} onChange={onChangeRender} value={render.alarm}
+                              checked={render.alarm}
+                              disabled={!methodResult.successful}>Alarm's
                     </Checkbox>
                   </Space>
                 </Col>
@@ -161,7 +150,7 @@ const Control = () => {
                       min={4}
                       max={200}
                       onChange={onChangeCellCount}
-                      value={typeof cellCount === 'number' ? cellCount : 0}
+                      value={typeof cell.count === 'number' ? cell.count : 0}
                     />
                   </Col>
                   <Col span={8} style={{ textAlign: 'center' }}>
@@ -169,7 +158,7 @@ const Control = () => {
                       min={4}
                       max={200}
                       style={{ margin: '0 16px' }}
-                      value={cellCount}
+                      value={cell.count}
                       onChange={onChangeCellCount}
                     />
                   </Col>
@@ -180,7 +169,7 @@ const Control = () => {
         </div>
         <div>
           <hr className={'control-hr'} />
-          <h3 className={'control-section-header'}>Alarm's {alarmIcon}</h3>
+          <h3 className={'control-section-header'}>Alarm's {ALARM_ICON}</h3>
           <Row>
             <Col span={24} style={{ textAlign: 'center' }}>
               <div style={{ textAlign: 'center', marginLeft: '40px', marginRight: '40px' }}>
@@ -191,7 +180,7 @@ const Control = () => {
                       min={1}
                       max={100}
                       onChange={onChangeAlarmCount}
-                      value={typeof alarmCount === 'number' ? alarmCount : 0}
+                      value={typeof alarms.count === 'number' ? alarms.count : 0}
                     />
                   </Col>
                   <Col span={8} style={{ textAlign: 'center' }}>
@@ -199,7 +188,7 @@ const Control = () => {
                       min={1}
                       max={100}
                       style={{ margin: '0 16px' }}
-                      value={alarmCount}
+                      value={alarms.count}
                       onChange={onChangeAlarmCount}
                     />
                   </Col>
@@ -217,7 +206,7 @@ const Control = () => {
                       min={1}
                       max={100}
                       onChange={onChangeAlarmRadius}
-                      value={typeof alarmRadius === 'number' ? alarmRadius : 0}
+                      value={typeof alarms.radius === 'number' ? alarms.radius : 0}
                     />
                   </Col>
                   <Col span={8} style={{ textAlign: 'center' }}>
@@ -225,7 +214,7 @@ const Control = () => {
                       min={1}
                       max={100}
                       style={{ margin: '0 16px' }}
-                      value={alarmRadius}
+                      value={alarms.radius}
                       onChange={onChangeAlarmRadius}
                     />
                   </Col>
@@ -236,14 +225,14 @@ const Control = () => {
         </div>
         <div>
           <hr className={'control-hr'} />
-          <h3 className={'control-section-header'}>Noise settings {noiseIcon}</h3>
+          <h3 className={'control-section-header'}>Noise settings {NOISE_ICON}</h3>
           <Row>
             <Col span={24} style={{ textAlign: 'center' }}>
               <h4>Noise method</h4>
               <Radio.Group
                 options={optionsNoise}
                 onChange={onChangeNoiseType}
-                value={noiseType}
+                value={noise.type}
                 optionType='button'
               />
             </Col>
@@ -257,7 +246,7 @@ const Control = () => {
                   min={1}
                   max={100}
                   onChange={onChangeXINK}
-                  value={typeof xink === 'number' ? xink : 0}
+                  value={typeof noise.xink === 'number' ? noise.xink : 0}
                 />
 
               </Col>
@@ -266,7 +255,7 @@ const Control = () => {
                   min={1}
                   max={100}
                   style={{ margin: '0 16px' }}
-                  value={xink}
+                  value={noise.xink}
                   onChange={onChangeXINK}
                 />
               </Col>
@@ -281,7 +270,7 @@ const Control = () => {
                   min={1}
                   max={100}
                   onChange={onChangeYINK}
-                  value={typeof yink === 'number' ? yink : 0}
+                  value={typeof noise.yink === 'number' ? noise.yink : 0}
                 />
               </Col>
               <Col span={8} style={{ textAlign: 'center' }}>
@@ -289,7 +278,7 @@ const Control = () => {
                   min={1}
                   max={100}
                   style={{ margin: '0 16px' }}
-                  value={yink}
+                  value={noise.yink}
                   onChange={onChangeYINK}
                 />
               </Col>

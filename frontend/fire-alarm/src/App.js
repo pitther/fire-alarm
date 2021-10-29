@@ -1,76 +1,97 @@
 import './App.css';
-import React from 'react';
+import React, { useCallback } from 'react';
 import Logo from './components/Logo';
 import Canvas from './components/Canvas';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { generateCells } from './util/generateCells';
 import Control from './components/Control';
 import { ParametersContext } from './context/ParametersContext';
 import DataDisplay from './components/DataDisplay';
 import {
   useAlarms,
-  useCanvasSize,
   useCell,
   useCellsData,
   useMethodResult,
   useNoise,
   useRender,
 } from './hooks/Parameters';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants/constants';
 
 function App() {
-  const { width, height } = useCanvasSize();
+  const noise = useNoise();
+  const cellsData = useCellsData();
+  const methodResult = useMethodResult();
 
-  const { xink, yink, type } = useNoise();
+  const alarms = useAlarms();
 
-  const { setFireExpectancies, setImportances } = useCellsData();
+  const render = useRender();
 
-  const {
-    serverResponseData, setSuccessful,
-  } = useMethodResult();
+  const cell = useCell();
 
-  const {
-    setAlarms, radius,
-  } = useAlarms();
-
-  const alarmCount = useAlarms().count;
-
-  const { setAlarm } = useRender();
-
-  const { setSizeY, setSizeX } = useCell();
-  const cellCount = useCell().count;
-
-  useEffect(() => {
-    setSizeX(width / cellCount);
-    setSizeY(height / cellCount);
-
-    setFireExpectancies(generateCells(cellCount, xink, yink, type));
-    setImportances(generateCells(cellCount, xink, yink, type));
-
-    setSuccessful(false);
-
-    setAlarms([]);
-
-    setAlarm(false);
-
-  }, [cellCount, width, height, xink, yink, type]);
-
-  useEffect(() => {
-    if (!serverResponseData || serverResponseData.error || !serverResponseData.alarms || !serverResponseData.alarms.length) {
+  const handleResponseData = useCallback( () => {
+    const { serverResponseData, setSuccessful } = methodResult;
+    if (!serverResponseData?.alarms?.length || serverResponseData.error) {
       setSuccessful(false);
-      setAlarm(false);
+
+      render.setAlarm(false);
     } else if (!serverResponseData.error && serverResponseData.alarms) {
       setSuccessful(true);
-      setAlarm(true);
-      setAlarms(serverResponseData.alarms);
-    }
-  }, [serverResponseData]);
 
+      render.setAlarm(true);
+      alarms.setAlarms(serverResponseData.alarms);
+    }
+  },[alarms, methodResult, render]);
+
+  const onIrrelevantData = useCallback(() => {
+    methodResult.setSuccessful(false);
+    alarms.setAlarms([]);
+    render.setAlarm(false);
+  }, [alarms, methodResult, render]);
+
+  const createRelevantCellData = useCallback(() => {
+    const {
+      setSizeX, setSizeY,
+      setFireExpectancies, setImportances,
+      xink, yink, type,
+      count,
+    } = { ...cell, ...cellsData, ...noise };
+
+    setSizeX(CANVAS_WIDTH / count);
+    setSizeY(CANVAS_HEIGHT / count);
+
+    setFireExpectancies(generateCells(count, xink, yink, type));
+    setImportances(generateCells(count, xink, yink, type));
+  }, [
+    cell, cellsData, noise,
+  ]);
 
   useEffect(() => {
-    setSuccessful(false);
-  }, [radius, alarmCount]);
+    createRelevantCellData();
+  }, [
+    cell.count, noise.xink,
+    noise.yink, noise.type
+  ]);
 
-  const parametersContext = {};
+  useEffect(() => {
+    onIrrelevantData();
+  }, [
+    alarms.radius, alarms.count,
+    cellsData.fireExpectancies,
+    cellsData.importances]);
+
+  useEffect(() => {
+    handleResponseData();
+  }, [methodResult.serverResponseData]);
+
+
+  const parametersContext = {
+    noise,
+    alarms,
+    cell,
+    cellsData,
+    methodResult,
+    render,
+  };
 
   return (
     <div className='container'>
@@ -79,8 +100,8 @@ function App() {
         <hr />
         <Canvas />
         <hr />
-        {/*<Control />*/}
-        {/*<DataDisplay />*/}
+        <Control />
+        <DataDisplay />
       </ParametersContext.Provider>
     </div>
   );

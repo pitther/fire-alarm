@@ -7,6 +7,7 @@ const sendPostRequest = async (url, data) => {
             },
             body: JSON.stringify(data)
         });
+
         const jsonResponse = await rawResponse.json();
         if (rawResponse.status !== 200 || jsonResponse.error){
             jsonResponse.error = true;
