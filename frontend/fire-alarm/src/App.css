@@ -76,6 +76,10 @@ hr{
   border-top: 2px dashed rgb(255, 229, 143);
 }
 
+.ant-ribbon-wrapper canvas:hover + .ant-ribbon{
+  display: none!important;
+}
+
 .control-section-header, .data-section-header{
   text-align: center;
   color: #ff6060;

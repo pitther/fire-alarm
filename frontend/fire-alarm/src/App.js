@@ -1,100 +1,89 @@
 import './App.css';
 import React from 'react';
-import Logo from './components/Logo'
-import Canvas from './components/Canvas'
-import {useEffect, useState} from "react";
-
-import {generateCells} from "./util/generateCells";
-import Control from "./components/Control";
-import {ParametersContext} from "./context/ParametersContext";
-import DataDisplay from "./components/DataDisplay";
-
+import Logo from './components/Logo';
+import Canvas from './components/Canvas';
+import { useEffect, useState } from 'react';
+import { generateCells } from './util/generateCells';
+import Control from './components/Control';
+import { ParametersContext } from './context/ParametersContext';
+import DataDisplay from './components/DataDisplay';
+import {
+  useAlarms,
+  useCanvasSize,
+  useCell,
+  useCellsData,
+  useMethodResult,
+  useNoise,
+  useRender,
+} from './hooks/Parameters';
 
 function App() {
-    const [cellCount, setCellCount] = useState(40);
+  const { width, height } = useCanvasSize();
 
-    const [WIDTH, setWIDTH] = useState(400);
-    const [HEIGHT, setHEIGHT] = useState(400);
+  const { xink, yink, type } = useNoise();
 
-    const [cellSizeX, setCellSizeX] = useState(WIDTH / cellCount);
-    const [cellSizeY, setCellSizeY] = useState(HEIGHT / cellCount);
+  const { setFireExpectancies, setImportances } = useCellsData();
 
-    const [xink, setXink] = useState(10);
-    const [yink, setYink] = useState(10);
-    const [noiseType, setNoiseType] = useState('simplex');
+  const {
+    serverResponseData, setSuccessful,
+  } = useMethodResult();
 
-    const [fireExpectancyArray, setFireExpectancyArray] = useState(generateCells(cellCount, xink, yink));
-    const [importanceArray, setImportanceArray] = useState(generateCells(cellCount, xink, yink))
-    const [serverResponseData, setServerResponseData] = useState();
-    const [resultSuccessful, setResultSuccessful] = useState(false);
+  const {
+    setAlarms, radius,
+  } = useAlarms();
 
-    const [alarmArray, setAlarmArray] = useState([]);
-    const [alarmCount, setAlarmCount] = useState(5);
-    const [alarmRadius, setAlarmRadius] = useState(10);
+  const alarmCount = useAlarms().count;
 
-    const [render, setRender] = useState({
-        fireExpectancy: true,
-        importance: false,
-        alarms: false,
-        grid: false
-    });
+  const { setAlarm } = useRender();
 
-    useEffect(() => {
-        setCellSizeX(WIDTH / cellCount);
-        setCellSizeY(HEIGHT / cellCount);
+  const { setSizeY, setSizeX } = useCell();
+  const cellCount = useCell().count;
 
-        setFireExpectancyArray(generateCells(cellCount, xink, yink, noiseType));
-        setImportanceArray(generateCells(cellCount, xink, yink, noiseType));
-        setResultSuccessful(false);
-        setAlarmArray([]);
-        setRender({...render,alarms:false})
-    }, [cellCount, WIDTH, HEIGHT, xink, yink, noiseType]);
+  useEffect(() => {
+    setSizeX(width / cellCount);
+    setSizeY(height / cellCount);
 
-    useEffect(() => {
-        if (!serverResponseData || serverResponseData.error || !serverResponseData.alarms || !serverResponseData.alarms.length) {
-            setResultSuccessful(false);
-            setRender({...render, alarms: false});
-        } else if (!serverResponseData.error && serverResponseData.alarms) {
-            setResultSuccessful(true);
-            setRender({...render, alarms: true});
-            setAlarmArray(serverResponseData.alarms);
-        }
-    }, [serverResponseData]);
+    setFireExpectancies(generateCells(cellCount, xink, yink, type));
+    setImportances(generateCells(cellCount, xink, yink, type));
+
+    setSuccessful(false);
+
+    setAlarms([]);
+
+    setAlarm(false);
+
+  }, [cellCount, width, height, xink, yink, type]);
+
+  useEffect(() => {
+    if (!serverResponseData || serverResponseData.error || !serverResponseData.alarms || !serverResponseData.alarms.length) {
+      setSuccessful(false);
+      setAlarm(false);
+    } else if (!serverResponseData.error && serverResponseData.alarms) {
+      setSuccessful(true);
+      setAlarm(true);
+      setAlarms(serverResponseData.alarms);
+    }
+  }, [serverResponseData]);
 
 
-    useEffect(() => {
-        setResultSuccessful(false);
-    }, [alarmRadius, alarmCount]);
+  useEffect(() => {
+    setSuccessful(false);
+  }, [radius, alarmCount]);
 
-    const parametersContext = {
-        setServerResponseData,
-        serverResponseData,
-        fireExpectancyArray, importanceArray,
-        cellCount, setCellCount,
-        WIDTH, HEIGHT,
-        xink, setXink,
-        yink, setYink,
-        cellSizeX, cellSizeY,
-        noiseType, setNoiseType,
-        render, setRender,
-        resultSuccessful,
-        alarmCount, setAlarmCount,
-        alarmRadius, setAlarmRadius,
-        alarmArray
-    };
+  const parametersContext = {};
 
-    return (
-        <div className='container'>
-            <Logo/>
-            <ParametersContext.Provider value={{...parametersContext}}>
-                <hr/>
-                <Canvas/>
-                <hr/>
-                <Control/>
-                <DataDisplay/>
-            </ParametersContext.Provider>
-        </div>
-    );
+  return (
+    <div className='container'>
+      <Logo />
+      <ParametersContext.Provider value={{ ...parametersContext }}>
+        <hr />
+        <Canvas />
+        <hr />
+        {/*<Control />*/}
+        {/*<DataDisplay />*/}
+      </ParametersContext.Provider>
+    </div>
+  );
 }
 
 export default App;
