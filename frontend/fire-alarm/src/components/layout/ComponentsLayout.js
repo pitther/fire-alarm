@@ -13,6 +13,7 @@ import {
   SETTINGS_DRAWER_HEADER_STYLE,
 } from '../../styles/inlineStyles';
 import { DATA_ICON, SETTINGS_ICON } from '../../constants/constants';
+import BackgroundParticles from './BackgroundParticles';
 
 const ComponentsLayout = () => {
   const [visibleSettingsDrawer, setVisibleSettingsDrawer] = useState(false);
@@ -36,6 +37,7 @@ const ComponentsLayout = () => {
 
   return (
     <div>
+      <BackgroundParticles />
       <Drawer
         title={<>Settings {SETTINGS_ICON}</>}
         placement="right"

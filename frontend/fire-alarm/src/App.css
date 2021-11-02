@@ -100,14 +100,30 @@ hr{
   width: 100%;
 }
 
+#control-send-button{
+  background-color: rgba(255,255,255,.9);
+}
+
+#control-send-button:hover{
+  background-color: rgba(255,255,255,1);
+}
+
 #control-settings-button{
   border-color: #91d5ff;
-  background: #e6f7ff;
+  background: rgba(230,247,255,.9);
+}
+
+#control-settings-button:hover{
+  background: rgba(230,247,255,1);
 }
 
 #control-data-button{
-  border-color: rgb(255, 229, 143);
-  background: rgb(255, 251, 230);
+  border-color: rgba(255, 229, 143,1);
+  background: rgba(255, 251, 230,.9);
+}
+
+#control-data-button:hover{
+  background: rgba(255, 251, 230,1);
 }
 
 .action-buttons-col{
@@ -137,9 +153,13 @@ hr{
   text-align: right;
 }
 
-
-
 #stage{
   box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2);
+}
+
+#button-disable-particles{
+  position: absolute;
+  border: 0;
+  box-shadow: none;
 }
 
