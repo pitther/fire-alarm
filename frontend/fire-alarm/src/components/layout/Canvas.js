@@ -135,8 +135,6 @@ const Canvas = () => {
       grid,
       alarm,
       importance,
-      sizeX,
-      sizeY,
     ],
   );
 
