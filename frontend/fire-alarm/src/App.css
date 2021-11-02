@@ -38,7 +38,7 @@ h1 {
   text-align: center;
   width: 400px;
   height: 400px;
-  margin: 0 auto;
+  margin: 30px auto;
 }
 
 .control-container .data-container{
@@ -96,8 +96,22 @@ hr{
   /*background: #e6f7ff;*/
 }
 
-#control-send-button{
+#control-send-button, #control-settings-button, #control-data-button{
   width: 100%;
+}
+
+#control-settings-button{
+  border-color: #91d5ff;
+  background: #e6f7ff;
+}
+
+#control-data-button{
+  border-color: rgb(255, 229, 143);
+  background: rgb(255, 251, 230);
+}
+
+.action-buttons-col{
+  padding: 5px;
 }
 
 #control-parameters-pre, .data-parameters-pre{
@@ -108,16 +122,9 @@ hr{
 }
 
 .control-parameters-block, .data-parameters-block{
-  margin: 10px;
-  border: 1px solid #91d5ff;
   padding: 20px;
-  background: #e6f7ff;
 }
 
-.data-parameters-block{
-  border-color: rgb(255, 229, 143);
-  background: rgb(255, 251, 230);
-}
 
 #stage{
   box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2);

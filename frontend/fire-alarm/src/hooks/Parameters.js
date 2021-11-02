@@ -26,7 +26,7 @@ const useNoise = () => {
 
 const useCellsData = () => {
   const { count } = useCell();
-  const {xink, yink} = useNoise();
+  const { xink, yink } = useNoise();
 
   const [fireExpectancies, setFireExpectancies] = useState(
     generateCells(count, xink, yink),
@@ -66,11 +66,23 @@ const useRender = () => {
   const [grid, setGrid] = useState(false);
 
   return {
-    fireExpectancy, setFireExpectancy,
-    importance, setImportance,
-    alarm, setAlarm,
-    grid, setGrid,
+    fireExpectancy,
+    setFireExpectancy,
+    importance,
+    setImportance,
+    alarm,
+    setAlarm,
+    grid,
+    setGrid,
   };
 };
 
-export { useState, useAlarms, useNoise, useRender, useCanvasSize, useCell, useMethodResult, useCellsData };
+export {
+  useAlarms,
+  useNoise,
+  useRender,
+  useCanvasSize,
+  useCell,
+  useMethodResult,
+  useCellsData,
+};
