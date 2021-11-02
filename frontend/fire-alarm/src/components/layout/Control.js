@@ -1,8 +1,9 @@
 import React, { useContext } from 'react';
-import { Col, InputNumber, Radio, Row, Slider, Space } from 'antd';
+import { Col, Radio, Row, Space } from 'antd';
 import { ParametersContext } from '../../context/ParametersContext';
 import Checkbox from 'antd/es/checkbox/Checkbox';
 import { ALARM_ICON, CANVAS_ICON, NOISE_ICON } from '../../constants/constants';
+import SliderWithInput from './input/SliderWithInput';
 
 const optionsNoise = [
   { label: 'Perlin', value: 'perlin' },
@@ -63,228 +64,144 @@ const Control = () => {
     }
   };
 
+  const optionsRender = [
+    {
+      label: 'Fire Expectancy',
+      name: 'fire_expectancy',
+      onChange: onChangeRender,
+      value: render.fireExpectancy,
+    },
+    {
+      label: 'Importance',
+      name: 'importance',
+      onChange: onChangeRender,
+      value: render.importance,
+    },
+    {
+      label: `Alarm's`,
+      name: 'alarm',
+      onChange: onChangeRender,
+      value: render.alarm,
+      disabled: !methodResult.successful,
+    },
+  ];
+
+  const optionsRenderAdditional = [
+    {
+      label: 'Grid',
+      name: 'grid',
+      onChange: onChangeRender,
+      value: render.grid,
+    },
+  ];
+
   return (
-    <div
-      className={'control-container'}
-      /*
-      style={loading ? { pointerEvents: 'none', opacity: 0.7 } : {}}
-*/
-    >
+    <div className={'control-container'}>
       <div className="control-parameters-block">
-        <div>
+        <div className={'text-center'}>
           <h3 className={'control-section-header'}>
             Canvas settings {CANVAS_ICON}
           </h3>
+          <h4>Render</h4>
           <Row>
-            <Col span={24} style={{ textAlign: 'center' }}>
-              <h4>Render</h4>
-              <Row>
-                <Col span={12}>
-                  <Space direction="vertical" style={{ textAlign: 'left' }}>
-                    <Checkbox
-                      name={'fire_expectancy'}
-                      onChange={onChangeRender}
-                      value={render.fireExpectancy}
-                      checked={render.fireExpectancy}
-                    >
-                      Fire Expectancy
-                    </Checkbox>
-
-                    <Checkbox
-                      name={'importance'}
-                      onChange={onChangeRender}
-                      value={render.importance}
-                      checked={render.importance}
-                    >
-                      Importance
-                    </Checkbox>
-
-                    <Checkbox
-                      name={'alarm'}
-                      onChange={onChangeRender}
-                      value={render.alarm}
-                      checked={render.alarm}
-                      disabled={!methodResult.successful}
-                    >
-                      Alarm's
-                    </Checkbox>
-                  </Space>
-                </Col>
-                <Col span={12}>
-                  <Space direction="vertical" style={{ textAlign: 'left' }}>
-                    <Checkbox
-                      name={'grid'}
-                      onChange={onChangeRender}
-                      value={render.grid}
-                      checked={render.grid}
-                    >
-                      Grid
-                    </Checkbox>
-                  </Space>
-                </Col>
-              </Row>
-              <div
-                style={{
-                  textAlign: 'center',
-                }}
+            <Col span={12}>
+              <Space
+                direction="vertical"
+                className={'text-left'}
+                style={{ float: 'left' }}
               >
-                <h4>Cell count row/col</h4>
-                <Row>
-                  <Col span={16} style={{ textAlign: 'center' }}>
-                    <Slider
-                      min={4}
-                      max={200}
-                      onChange={onChangeCellCount}
-                      value={typeof cell.count === 'number' ? cell.count : 0}
-                    />
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'center' }}>
-                    <InputNumber
-                      min={4}
-                      max={200}
-                      value={cell.count}
-                      onChange={onChangeCellCount}
-                    />
-                  </Col>
-                </Row>
-              </div>
+                {optionsRender.map((option) => {
+                  return (
+                    <Checkbox
+                      name={option.name}
+                      onChange={option.onChange}
+                      value={option.value}
+                      checked={option.value}
+                    >
+                      {option.label}
+                    </Checkbox>
+                  );
+                })}
+              </Space>
+            </Col>
+            <Col span={12}>
+              <Space direction="vertical" className={'text-left'}>
+                {optionsRenderAdditional.map((option) => {
+                  return (
+                    <Checkbox
+                      name={option.name}
+                      onChange={option.onChange}
+                      value={option.value}
+                      checked={option.value}
+                    >
+                      {option.label}
+                    </Checkbox>
+                  );
+                })}
+              </Space>
             </Col>
           </Row>
+          <SliderWithInput
+            label={'Cell count row/col'}
+            max={100}
+            min={1}
+            onChange={onChangeCellCount}
+            numberParameter={cell.count}
+          />
         </div>
-        <div>
-          <hr className={'control-hr'} />
+
+        <hr className={'control-hr'} />
+        <div className={'text-center'}>
           <h3 className={'control-section-header'}>Alarm's {ALARM_ICON}</h3>
-          <Row>
-            <Col span={24} style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  textAlign: 'center',
-                }}
-              >
-                <h4>Count</h4>
-                <Row>
-                  <Col span={16} style={{ textAlign: 'center' }}>
-                    <Slider
-                      min={1}
-                      max={100}
-                      onChange={onChangeAlarmCount}
-                      value={
-                        typeof alarms.count === 'number' ? alarms.count : 0
-                      }
-                    />
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'center' }}>
-                    <InputNumber
-                      min={1}
-                      max={100}
-                      value={alarms.count}
-                      onChange={onChangeAlarmCount}
-                    />
-                  </Col>
-                </Row>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24} style={{ textAlign: 'center' }}>
-              <div
-                style={{
-                  textAlign: 'center',
-                }}
-              >
-                <h4>Radius</h4>
-                <Row>
-                  <Col span={16} style={{ textAlign: 'center' }}>
-                    <Slider
-                      min={1}
-                      max={100}
-                      onChange={onChangeAlarmRadius}
-                      value={
-                        typeof alarms.radius === 'number' ? alarms.radius : 0
-                      }
-                    />
-                  </Col>
-                  <Col span={8} style={{ textAlign: 'center' }}>
-                    <InputNumber
-                      min={1}
-                      max={100}
-                      value={alarms.radius}
-                      onChange={onChangeAlarmRadius}
-                    />
-                  </Col>
-                </Row>
-              </div>
-            </Col>
-          </Row>
+          <SliderWithInput
+            label={'Count'}
+            max={100}
+            min={1}
+            onChange={onChangeAlarmCount}
+            numberParameter={alarms.count}
+          />
+          <SliderWithInput
+            label={'Radius'}
+            min={1}
+            max={100}
+            onChange={onChangeAlarmRadius}
+            numberParameter={alarms.radius}
+          />
         </div>
-        <div>
-          <hr className={'control-hr'} />
+
+        <hr className={'control-hr'} />
+        <div className={'text-center'}>
           <h3 className={'control-section-header'}>
             Noise settings {NOISE_ICON}
           </h3>
-          <Row>
-            <Col span={24} style={{ textAlign: 'center' }}>
-              <h4>Noise method</h4>
-              <Radio.Group
-                options={optionsNoise}
-                onChange={onChangeNoiseType}
-                value={noise.type}
-                optionType="button"
-              />
-            </Col>
-          </Row>
-          <br />
-          <div
-            style={{
-              textAlign: 'center',
-            }}
-          >
-            <h4>Xink</h4>
-            <Row>
-              <Col span={16} style={{ textAlign: 'center' }}>
-                <Slider
-                  min={1}
-                  max={100}
-                  onChange={onChangeXINK}
-                  value={typeof noise.xink === 'number' ? noise.xink : 0}
-                />
-              </Col>
-              <Col span={8} style={{ textAlign: 'center' }}>
-                <InputNumber
-                  min={1}
-                  max={100}
-                  value={noise.xink}
-                  onChange={onChangeXINK}
-                />
-              </Col>
-            </Row>
-          </div>
 
-          <div
-            style={{
-              textAlign: 'center',
-            }}
-          >
-            <h4>Yink</h4>
-            <Row>
-              <Col span={16} style={{ textAlign: 'center' }}>
-                <Slider
-                  min={1}
-                  max={100}
-                  onChange={onChangeYINK}
-                  value={typeof noise.yink === 'number' ? noise.yink : 0}
-                />
-              </Col>
-              <Col span={8} style={{ textAlign: 'center' }}>
-                <InputNumber
-                  min={1}
-                  max={100}
-                  value={noise.yink}
-                  onChange={onChangeYINK}
-                />
-              </Col>
-            </Row>
-          </div>
+          <h4>Noise method</h4>
+
+          <Radio.Group
+            options={optionsNoise}
+            onChange={onChangeNoiseType}
+            value={noise.type}
+            optionType="button"
+          />
+
+          <br />
+          <br />
+
+          <SliderWithInput
+            label={'Xink'}
+            max={100}
+            min={1}
+            onChange={onChangeXINK}
+            numberParameter={noise.xink}
+          />
+
+          <SliderWithInput
+            label={'Yink'}
+            max={100}
+            min={1}
+            onChange={onChangeYINK}
+            numberParameter={noise.yink}
+          />
         </div>
       </div>
     </div>
