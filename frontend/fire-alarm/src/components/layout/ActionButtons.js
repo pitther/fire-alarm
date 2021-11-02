@@ -20,9 +20,10 @@ const ActionButtons = ({ showSettingsDrawer, showDataDrawer }) => {
     const res = await sendPostRequest('http://localhost:3002/sendData', {
       fireExpectancies: cellsData.fireExpectancies,
       importances: cellsData.importances,
-      alarm: {
+      alarms: {
         count: alarms.count,
         radius: alarms.radius,
+        chance: alarms.chance,
       },
     });
     console.log(res);

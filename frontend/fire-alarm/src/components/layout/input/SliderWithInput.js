@@ -1,7 +1,14 @@
 import React from 'react';
 import { Col, InputNumber, Row, Slider } from 'antd';
 
-const SliderWithInput = ({ label, min, max, numberParameter, onChange }) => {
+const SliderWithInput = ({
+  step,
+  label,
+  min,
+  max,
+  numberParameter,
+  onChange,
+}) => {
   return (
     <div className={'text-center'}>
       <h4>{label}</h4>
@@ -11,6 +18,7 @@ const SliderWithInput = ({ label, min, max, numberParameter, onChange }) => {
             min={min}
             max={max}
             onChange={onChange}
+            step={step ? step : 1}
             value={typeof numberParameter === 'number' ? numberParameter : 0}
           />
         </Col>
@@ -20,6 +28,7 @@ const SliderWithInput = ({ label, min, max, numberParameter, onChange }) => {
             max={max}
             value={numberParameter}
             onChange={onChange}
+            step={step ? step : 1}
           />
         </Col>
       </Row>

@@ -32,6 +32,10 @@ const Control = () => {
     alarms.setCount(value);
   };
 
+  const onChangeAlarmChance = (value) => {
+    alarms.setChance(value);
+  };
+
   const onChangeCellCount = (value) => {
     cell.setCount(value);
   };
@@ -58,6 +62,10 @@ const Control = () => {
         render.setGrid(e.target.checked);
         return;
       }
+      case 'chances': {
+        render.setChances(e.target.checked);
+        return;
+      }
       default: {
         return;
       }
@@ -78,10 +86,17 @@ const Control = () => {
       value: render.importance,
     },
     {
-      label: `Alarm's`,
+      label: `Alarms`,
       name: 'alarm',
       onChange: onChangeRender,
       value: render.alarm,
+      disabled: !methodResult.successful,
+    },
+    {
+      label: `Chances`,
+      name: 'chances',
+      onChange: onChangeRender,
+      value: render.chances,
       disabled: !methodResult.successful,
     },
   ];
@@ -168,6 +183,14 @@ const Control = () => {
             onChange={onChangeAlarmRadius}
             numberParameter={alarms.radius}
           />
+          <SliderWithInput
+            label={'Trigger chance'}
+            min={0.05}
+            max={1}
+            step={0.01}
+            onChange={onChangeAlarmChance}
+            numberParameter={alarms.chance}
+          />
         </div>
 
         <hr className={'control-hr'} />
@@ -192,6 +215,7 @@ const Control = () => {
             label={'Xink'}
             max={100}
             min={1}
+            step={0.01}
             onChange={onChangeXINK}
             numberParameter={noise.xink}
           />
@@ -200,6 +224,7 @@ const Control = () => {
             label={'Yink'}
             max={100}
             min={1}
+            step={0.05}
             onChange={onChangeYINK}
             numberParameter={noise.yink}
           />

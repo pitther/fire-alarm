@@ -12,6 +12,10 @@ import {
   UNSUCCESSFUL_COLOR,
 } from '../../constants/constants';
 
+message.config({
+  maxCount: 2,
+});
+
 const Canvas = () => {
   const { alarms, cell, cellsData, methodResult, render } =
     useContext(ParametersContext);
@@ -145,34 +149,33 @@ const Canvas = () => {
       const cellFireExpectancy = fireExpectancies[xIndex][yIndex];
       const cellImportance = importances[xIndex][yIndex];
 
-      message.info(
-        `FireExp: ${cellFireExpectancy.toFixed(
-          3,
-        )}, Importance: ${cellImportance.toFixed(3)}`,
-      );
+      message.info(`FireExp: ${cellFireExpectancy.toFixed(3)}, 
+          Importance: ${cellImportance.toFixed(3)}`);
     },
     [fireExpectancies, importances, sizeX, sizeY],
   );
 
   return (
-    <div id="canvas-container">
-      <Badge.Ribbon
-        id={'canvas-ribbon'}
-        placement={'start'}
-        color={successful ? SUCCESSFUL_COLOR : UNSUCCESSFUL_COLOR}
-        text={successful ? 'Ready' : 'Not ready'}
-      >
-        <Stage
-          id={'stage'}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          options={{ backgroundAlpha: 0.1 }}
-          onClick={(e) => onClick(e)}
+    <>
+      <div id="canvas-container">
+        <Badge.Ribbon
+          id={'canvas-ribbon'}
+          placement={'start'}
+          color={successful ? SUCCESSFUL_COLOR : UNSUCCESSFUL_COLOR}
+          text={successful ? 'Ready' : 'Not ready'}
         >
-          <Graphics draw={draw} />
-        </Stage>
-      </Badge.Ribbon>
-    </div>
+          <Stage
+            id={'stage'}
+            width={CANVAS_WIDTH}
+            height={CANVAS_HEIGHT}
+            options={{ backgroundAlpha: 0.1 }}
+            onClick={(e) => onClick(e)}
+          >
+            <Graphics draw={draw} />
+          </Stage>
+        </Badge.Ribbon>
+      </div>
+    </>
   );
 };
 

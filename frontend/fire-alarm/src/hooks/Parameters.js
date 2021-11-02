@@ -53,10 +53,23 @@ const useMethodResult = () => {
 
 const useAlarms = () => {
   const [alarms, setAlarms] = useState([]);
+  const [chances, setChances] = useState([]);
   const [count, setCount] = useState(5);
   const [radius, setRadius] = useState(10);
+  const [chance, setChance] = useState(0.5);
 
-  return { alarms, setAlarms, count, setCount, radius, setRadius };
+  return {
+    chances,
+    setChances,
+    chance,
+    setChance,
+    alarms,
+    setAlarms,
+    count,
+    setCount,
+    radius,
+    setRadius,
+  };
 };
 
 const useRender = () => {
@@ -64,8 +77,11 @@ const useRender = () => {
   const [importance, setImportance] = useState(false);
   const [alarm, setAlarm] = useState(false);
   const [grid, setGrid] = useState(false);
+  const [chances, setChances] = useState(false);
 
   return {
+    chances,
+    setChances,
     fireExpectancy,
     setFireExpectancy,
     importance,

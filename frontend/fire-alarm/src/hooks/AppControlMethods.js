@@ -9,30 +9,38 @@ function useAppControlMethods(context) {
   const { setFireExpectancies, setImportances } = cellsData;
   const { setSuccessful, serverResponseData } = methodResult;
   const { setAlarms } = alarms;
-  const { setAlarm } = render;
+  const { setAlarm, setChances } = render;
   const { setSizeY, setSizeX } = cell;
+
+  const changeSuccessStatus = (value) => {
+    setSuccessful(value);
+    setAlarm(value);
+    setChances(value);
+    if (!value) {
+      alarms.setChances([]);
+      setAlarms([]);
+    }
+  };
 
   const handleResponseData = useCallback(() => {
     if (!serverResponseData?.alarms?.length || serverResponseData.error) {
-      setSuccessful(false);
-
-      setAlarm(false);
+      changeSuccessStatus(false);
     } else if (!serverResponseData.error && serverResponseData.alarms) {
-      setSuccessful(true);
-
-      setAlarm(true);
+      changeSuccessStatus(true);
       setAlarms(serverResponseData.alarms);
+      alarms.setChances(serverResponseData.chances);
     }
   }, [serverResponseData, setAlarm, setAlarms, setSuccessful]);
 
   const onIrrelevantData = useCallback(() => {
-    setSuccessful(false);
-    setAlarms([]);
-    setAlarm(false);
+    changeSuccessStatus(false);
   }, [
     setSuccessful,
     setAlarms,
     setAlarm,
+    alarms.count,
+    alarms.radius,
+    alarms.chance,
     cell.count,
     noise.type,
     noise.xink,
