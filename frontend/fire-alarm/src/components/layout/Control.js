@@ -117,6 +117,7 @@ const Control = () => {
                       onChange={option.onChange}
                       value={option.value}
                       checked={option.value}
+                      disabled={option?.disabled}
                     >
                       {option.label}
                     </Checkbox>
