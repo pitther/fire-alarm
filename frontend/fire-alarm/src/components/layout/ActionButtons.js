@@ -5,6 +5,8 @@ import {
   FIRE_ICON,
   LOADING_ICON,
   SETTINGS_ICON,
+  SERVER_PORT,
+  SERVER_URL,
 } from '../../constants/constants';
 import { sendPostRequest } from '../../data/request';
 import { ParametersContext } from '../../context/ParametersContext';
@@ -16,8 +18,8 @@ const ActionButtons = ({ showSettingsDrawer, showDataDrawer }) => {
   const sendDataToServer = async () => {
     setLoading(true);
     message.info('Data has been sent to server...');
-
-    const res = await sendPostRequest('http://localhost:3002/sendData', {
+    console.log(`${SERVER_URL}:${SERVER_PORT}/sendData`);
+    const res = await sendPostRequest(`${SERVER_URL}:${SERVER_PORT}/sendData`, {
       fireExpectancies: cellsData.fireExpectancies,
       importances: cellsData.importances,
       alarms: {

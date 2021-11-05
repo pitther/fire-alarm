@@ -7,6 +7,9 @@ import {
   ToolFilled,
 } from '@ant-design/icons';
 
+export const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+export const SERVER_PORT = process.env.REACT_APP_SERVER_PORT;
+
 const CANVAS_WIDTH = 400;
 const CANVAS_HEIGHT = 400;
 
