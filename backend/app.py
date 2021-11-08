@@ -32,11 +32,9 @@ def hello_world():
 
     result = []
     for i in best:
-        result.append({"x": i[0], "y": i[1], "r": 10})
+        result.append({"x": i[0], "y": i[1], "r": radius})
 
     return { "error": 0, "alarms": result }
-
-
  
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
