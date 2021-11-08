@@ -92,13 +92,13 @@ const Control = () => {
       value: render.alarm,
       disabled: !methodResult.successful,
     },
-    {
+    /*{
       label: `Chances`,
       name: 'chances',
       onChange: onChangeRender,
       value: render.chances,
       disabled: !methodResult.successful,
-    },
+    },*/
   ];
 
   const optionsRenderAdditional = [
