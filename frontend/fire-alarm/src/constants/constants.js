@@ -2,6 +2,7 @@ import {
   DashboardFilled,
   FireOutlined,
   FormatPainterFilled,
+  FormatPainterOutlined,
   SnippetsFilled,
   SoundFilled,
   ToolFilled,
@@ -28,8 +29,10 @@ const CANVAS_ICON = <FormatPainterFilled style={{ fontSize: 15 }} />;
 const ALARM_ICON = <SoundFilled style={{ fontSize: 15 }} />;
 const DATA_ICON = <SnippetsFilled style={{ fontSize: 15 }} />;
 const SETTINGS_ICON = <ToolFilled style={{ fontSize: 15 }} />;
+const DRAWING_ICON = <FormatPainterOutlined style={{ fontSize: 15 }} />;
 
 export {
+  DRAWING_ICON,
   SUCCESSFUL_COLOR,
   UNSUCCESSFUL_COLOR,
   CANVAS_GRADIENT_COLOR_2,

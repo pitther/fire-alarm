@@ -10,13 +10,16 @@ import {
 } from '../../constants/constants';
 import { sendPostRequest } from '../../data/request';
 import { ParametersContext } from '../../context/ParametersContext';
+import DrawingSettings from './DrawingSettings';
 
 const ActionButtons = ({ showSettingsDrawer, showDataDrawer }) => {
-  const { alarms, cellsData, methodResult } = useContext(ParametersContext);
+  const { alarms, cellsData, methodResult, drawing } =
+    useContext(ParametersContext);
   const [loading, setLoading] = useState(false);
 
   const sendDataToServer = async () => {
     setLoading(true);
+    drawing.setEnabled(false);
     message.info('Data has been sent to server...');
     console.log(`${SERVER_URL}:${SERVER_PORT}/sendData`);
     const res = await sendPostRequest(`${SERVER_URL}:${SERVER_PORT}/sendData`, {
@@ -81,6 +84,11 @@ const ActionButtons = ({ showSettingsDrawer, showDataDrawer }) => {
           >
             Settings {SETTINGS_ICON}
           </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24} className={'action-buttons-col'}>
+          <DrawingSettings />
         </Col>
       </Row>
     </div>

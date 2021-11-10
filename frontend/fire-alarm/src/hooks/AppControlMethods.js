@@ -6,7 +6,8 @@ function useAppControlMethods(context) {
   const { noise, alarms, cell, cellsData, methodResult, render } =
     useContext(context);
 
-  const { setFireExpectancies, setImportances } = cellsData;
+  const { setFireExpectancies, setImportances, fireExpectancies, importances } =
+    cellsData;
   const { setSuccessful, serverResponseData } = methodResult;
   const { setAlarms } = alarms;
   const { setAlarm, setChances } = render;
@@ -38,6 +39,8 @@ function useAppControlMethods(context) {
     setSuccessful,
     setAlarms,
     setAlarm,
+    fireExpectancies,
+    importances,
     alarms.count,
     alarms.radius,
     alarms.chance,

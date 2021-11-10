@@ -11,20 +11,23 @@ import {
   SUCCESSFUL_COLOR,
   UNSUCCESSFUL_COLOR,
 } from '../../constants/constants';
+import { getPoints, getPointsRect } from '../../util/manageArray';
+import CanvasInfoPanel from './CanvasInfoPanel';
 
 message.config({
   maxCount: 2,
 });
 
 const Canvas = () => {
-  const { alarms, cell, cellsData, methodResult, render } =
+  const { alarms, cell, cellsData, methodResult, render, drawing } =
     useContext(ParametersContext);
 
   const { successful } = methodResult;
   const { sizeX, sizeY } = cell;
   const { fireExpectancy, importance, alarm, grid } = render;
 
-  const { fireExpectancies, importances } = cellsData;
+  const { fireExpectancies, importances, setFireExpectancies, setImportances } =
+    cellsData;
 
   const drawFigure = ({
     graphic,
@@ -49,6 +52,108 @@ const Canvas = () => {
 
     graphic.endFill();
   };
+
+  const onUserDrawing = (xIndex, yIndex) => {
+    const weight = drawing.weight;
+    const type = drawing.drawingType;
+    const figure = drawing.drawingFigure;
+    const radius = drawing.radius;
+
+    switch (figure) {
+      case 0:
+        drawCell(xIndex, yIndex, weight, type);
+        return;
+      case 1:
+        getPointsRect(xIndex, yIndex, radius).forEach((cell) => {
+          drawCell(cell.x, cell.y, weight, type);
+        });
+        return;
+      case 2:
+        getPoints(xIndex, yIndex, radius).forEach((cell) => {
+          drawCell(cell.x, cell.y, weight, type);
+        });
+        return;
+      default:
+        return;
+    }
+  };
+
+  const drawCell = (xIndex, yIndex, weight, type) => {
+    if (
+      !(
+        xIndex >= 0 &&
+        yIndex >= 0 &&
+        xIndex < fireExpectancies.length &&
+        yIndex < fireExpectancies[xIndex].length
+      ) ||
+      !fireExpectancies
+    )
+      return;
+
+    if (!type) {
+      if (fireExpectancies[xIndex][yIndex] !== weight) {
+        const newFireExpectancies = [...fireExpectancies];
+        newFireExpectancies[xIndex][yIndex] = weight;
+        setFireExpectancies(newFireExpectancies);
+      }
+    } else if (type === 1) {
+      if (importances[xIndex][yIndex] !== weight) {
+        const changedImportances = [...importances];
+        changedImportances[xIndex][yIndex] = weight;
+        setImportances(changedImportances);
+      }
+    }
+  };
+
+  const onClick = useCallback(
+    (event) => {
+      const x = event.nativeEvent.offsetX;
+      const y = event.nativeEvent.offsetY;
+      const xIndex = Math.floor(x / sizeX);
+      const yIndex = Math.floor(y / sizeY);
+
+      if (drawing.enabled) {
+        onUserDrawing(xIndex, yIndex);
+      } else {
+        const cellFireExpectancy = fireExpectancies[xIndex][yIndex];
+        const cellImportance = importances[xIndex][yIndex];
+
+        message.info(`FireExp: ${cellFireExpectancy.toFixed(3)}, 
+          Importance: ${cellImportance.toFixed(3)}`);
+      }
+    },
+    [
+      drawing,
+      fireExpectancies,
+      importances,
+      setFireExpectancies,
+      setImportances,
+      sizeX,
+      sizeY,
+    ],
+  );
+
+  const onMouseDragged = useCallback(
+    (event) => {
+      if (event.buttons !== 1 || !drawing.enabled) return;
+      const x = event.nativeEvent.offsetX;
+      const y = event.nativeEvent.offsetY;
+      const xIndex = Math.floor(x / sizeX);
+      const yIndex = Math.floor(y / sizeY);
+
+      if (drawing.enabled) {
+        onUserDrawing(xIndex, yIndex);
+      }
+    },
+    [
+      drawCell,
+      drawing.drawingType,
+      drawing.enabled,
+      drawing.weight,
+      sizeX,
+      sizeY,
+    ],
+  );
 
   const draw = React.useCallback(
     (g) => {
@@ -132,32 +237,19 @@ const Canvas = () => {
       importances,
       fireExpectancies,
       fireExpectancy,
+      setFireExpectancies,
       grid,
       alarm,
       importance,
+      onClick,
     ],
-  );
-
-  const onClick = useCallback(
-    (event) => {
-      const x = event.nativeEvent.offsetX;
-      const y = event.nativeEvent.offsetY;
-      const xIndex = Math.floor(x / sizeX);
-      const yIndex = Math.floor(y / sizeY);
-      const cellFireExpectancy = fireExpectancies[xIndex][yIndex];
-      const cellImportance = importances[xIndex][yIndex];
-
-      message.info(`FireExp: ${cellFireExpectancy.toFixed(3)}, 
-          Importance: ${cellImportance.toFixed(3)}`);
-    },
-    [fireExpectancies, importances, sizeX, sizeY],
   );
 
   return (
     <>
       <div id="canvas-container">
         <Badge.Ribbon
-          id={'canvas-ribbon'}
+          className={'canvas-ribbon'}
           placement={'start'}
           color={successful ? SUCCESSFUL_COLOR : UNSUCCESSFUL_COLOR}
           text={successful ? 'Ready' : 'Not ready'}
@@ -167,10 +259,12 @@ const Canvas = () => {
             width={CANVAS_WIDTH}
             height={CANVAS_HEIGHT}
             options={{ backgroundAlpha: 0.1 }}
-            onClick={(e) => onClick(e)}
+            onClick={onClick}
+            onMouseMove={onMouseDragged}
           >
             <Graphics draw={draw} />
           </Stage>
+          <CanvasInfoPanel />
         </Badge.Ribbon>
       </div>
     </>

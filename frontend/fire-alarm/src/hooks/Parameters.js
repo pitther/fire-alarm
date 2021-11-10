@@ -8,8 +8,29 @@ const useCanvasSize = () => {
   return { width, height, setWidth, setHeight };
 };
 
+const useDrawing = () => {
+  const [enabled, setEnabled] = useState(false);
+  const [weight, setWeight] = useState(1);
+  const [drawingType, setDrawingType] = useState(0);
+  const [radius, setRadius] = useState(1);
+  const [drawingFigure, setDrawingFigure] = useState(0);
+
+  return {
+    enabled,
+    setEnabled,
+    weight,
+    setWeight,
+    drawingType,
+    setDrawingType,
+    radius,
+    setRadius,
+    drawingFigure,
+    setDrawingFigure,
+  };
+};
+
 const useCell = () => {
-  const [count, setCount] = useState(40);
+  const [count, setCount] = useState(20);
   const [sizeX, setSizeX] = useState(useCanvasSize().width / count);
   const [sizeY, setSizeY] = useState(useCanvasSize().height / count);
 
@@ -101,4 +122,5 @@ export {
   useCell,
   useMethodResult,
   useCellsData,
+  useDrawing,
 };

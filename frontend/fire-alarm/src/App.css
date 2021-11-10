@@ -2,165 +2,262 @@
 
 
 body {
-  font-family: "Roboto", sans-serif;
+    font-family: "Roboto", sans-serif;
 }
 
-.container{
-  padding-top: 2rem;
-  max-width: 600px;
-  margin: 0 auto;
+.container {
+    padding-top: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.logo-container{
-  text-align: center;
-  white-space: nowrap;
+.logo-container {
+    text-align: center;
+    white-space: nowrap;
 }
 
-.logo{
-  text-align: center;
-  background-size: cover;
-  width: 23px;
-  height: 23px;
-  display: inline-block;
+.logo {
+    text-align: center;
+    background-size: cover;
+    width: 23px;
+    height: 23px;
+    display: inline-block;
 }
 
-pre{
-  overflow: scroll;
+pre {
+    overflow: scroll;
 }
 
 h1 {
-  white-space: nowrap;
-  display: inline;
-  text-align: center;
+    white-space: nowrap;
+    display: inline;
+    text-align: center;
 }
 
-#canvas-container{
-  text-align: center;
-  width: 400px;
-  height: 400px;
-  margin: 30px auto;
+.control-container .data-container {
+    margin-top: 10px;
+    margin-bottom: 30px;
 }
 
-.control-container .data-container{
-  margin-top: 10px;
-  margin-bottom: 30px;
+#control-spin-container {
+    background: rgba(255, 255, 255, .5);
+    left: 0;
+    top: 0;
+    z-index: 100;
+
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    /*display: flex;*/
+    display: none;
+    justify-content: center;
+    align-items: center;
 }
 
-#control-spin-container{
-  background: rgba(255,255,255,.5);
-  left: 0;
-  top: 0;
-  z-index: 100;
-
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  /*display: flex;*/
-  display: none;
-  justify-content: center;
-  align-items: center;
+hr {
+    border: none;
+    border-top: 1.5px solid grey;
 }
 
-hr{
-  border: none;
-  border-top: 1.5px solid grey;
+.control-hr {
+    margin: 15px 0;
+    border-top: 2px dashed #91d5ff;
 }
 
-.control-hr{
-  margin: 15px 0;
-  border-top: 2px dashed #91d5ff;
+.data-hr {
+    margin: 15px 0;
+    border-top: 2px dashed rgb(255, 229, 143);
 }
 
-.data-hr{
-  margin: 15px 0;
-  border-top: 2px dashed rgb(255, 229, 143);
+.drawing-hr {
+    margin: 15px 0;
+    border-top: 2px dashed rgb(125, 255, 96);
 }
 
-.ant-ribbon-wrapper canvas:hover + .ant-ribbon{
-  display: none!important;
+.ant-ribbon-wrapper canvas:hover + .ant-ribbon {
+    display: none !important;
+
 }
 
-.control-section-header, .data-section-header{
-  text-align: center;
-  color: #ff6060;
+.ant-ribbon {
+    height: auto !important;
 }
 
-#control-spin{
-  position: absolute;
-  z-index: 5000;
+.control-section-header, .data-section-header {
+    text-align: center;
+    color: #ff6060;
 }
 
-.control-send-block{
-  /*border: 1px solid #91d5ff;*/
-  padding: 10px;
-  /*background: #e6f7ff;*/
+#control-spin {
+    position: absolute;
+    z-index: 5000;
 }
 
-#control-send-button, #control-settings-button, #control-data-button{
-  width: 100%;
+.control-send-block {
+    /*border: 1px solid #91d5ff;*/
+    padding: 10px;
+    /*background: #e6f7ff;*/
 }
 
-#control-send-button{
-  background-color: rgba(255,255,255,.9);
+
+#control-send-button, #control-settings-button, #control-data-button {
+    width: 100%;
 }
 
-#control-send-button:hover{
-  background-color: rgba(255,255,255,1);
+#control-send-button {
+    background-color: rgba(255, 255, 255, .9);
 }
 
-#control-settings-button{
-  border-color: #91d5ff;
-  background: rgba(230,247,255,.9);
+#control-send-button:hover {
+    background-color: rgba(255, 255, 255, 1);
 }
 
-#control-settings-button:hover{
-  background: rgba(230,247,255,1);
+#control-settings-button {
+    border-color: #91d5ff;
+    background: rgba(230, 247, 255, .9);
 }
 
-#control-data-button{
-  border-color: rgba(255, 229, 143,1);
-  background: rgba(255, 251, 230,.9);
+#control-settings-button:hover {
+    background: rgba(230, 247, 255, 1);
 }
 
-#control-data-button:hover{
-  background: rgba(255, 251, 230,1);
+#control-data-button {
+    border-color: rgba(255, 229, 143, 1);
+    background: rgba(255, 251, 230, .9);
 }
 
-.action-buttons-col{
-  padding: 5px;
+#control-data-button:hover {
+    background: rgba(255, 251, 230, 1);
 }
 
-#control-parameters-pre, .data-parameters-pre{
-  max-height: 250px;
-  /*background: #e6f7ff;*/
-
-  /*border: 1px solid #91d5ff;*/
+.action-buttons-col {
+    padding: 5px;
 }
 
-.control-parameters-block, .data-parameters-block{
-  padding: 20px;
+#control-parameters-pre, .data-parameters-pre {
+    max-height: 250px;
+    /*background: #e6f7ff;*/
+
+    /*border: 1px solid #91d5ff;*/
 }
 
-.text-center{
-  text-align: center;
+.control-parameters-block, .data-parameters-block {
+    padding: 20px;
 }
 
-.text-left{
-  text-align: left;
+.text-center {
+    text-align: center;
 }
 
-.text-right{
-  text-align: right;
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+#button-disable-particles {
+    position: absolute;
+    border: 0;
+    box-shadow: none;
+}
+
+
+.drawing-switch {
+    width: 100%;
+    height: 32px;
+    border-radius: 2px;
+    border: 1px dashed rgb(151, 255, 128);
+    background-color: rgba(255, 255, 255, .9);
+}
+
+.drawing-switch.ant-switch-checked {
+    background-color: rgb(151, 255, 128);
+}
+
+.drawing-switch > .ant-switch-handle {
+    border-radius: 0px;
+    height: 26px;
+}
+
+.drawing-switch > .ant-switch-handle::before {
+    background-color: rgba(151, 255, 128, 0.5);
+    padding: 2px;
+    border-radius: 2px;
+    height: 26px;
+    width: 15px;
+}
+
+.drawing-switch > .ant-switch-inner {
+    color: black;
+    padding: 6px;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+}
+
+.drawing-options {
+    width: 100%;
+    background-color: rgba(151, 255, 128, 0.7);
+    border-radius: 2px;
+    border: 0px;
+
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+
+    transition: max-height .3s ease-out;
+}
+
+.drawing-options-expand {
+    max-height: 800px;
+    border: 1px dashed rgb(151, 255, 128);
+    border-top: 0px;
+    padding: 20px 50px;
+}
+
+.drawing-options-container {
+    padding: 20px;
+    text-align: center;
+}
+
+.clear-data-button {
+    margin: 3px;
+}
+
+.canvas-ribbon {
+
 }
 
 #stage{
-  box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2);
+    box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2);
 }
 
-#button-disable-particles{
-  position: absolute;
-  border: 0;
-  box-shadow: none;
+#canvas-container {
+    cursor: pointer;
+    text-align: center;
+    width: 400px;
+    height: 450px;
+    margin: 30px auto;
+}
+
+.canvas-info-panel {
+    cursor: default;
+    width: 100%;
+    height: 50px;
+    padding: 5px;
+    display: block;
+    background: white;
+    z-index: 0;
+    box-shadow: 4px 4px 8px 0 rgba(34, 60, 80, 0.2);
+    position: relative;
 }
 
 
+.ant-statistic-title {
+    font-size: 12px;
+}
+
+.ant-statistic-content {
+    font-size: 12px;
+}

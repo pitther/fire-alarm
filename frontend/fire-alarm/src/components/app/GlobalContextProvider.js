@@ -4,6 +4,7 @@ import {
   useAlarms,
   useCell,
   useCellsData,
+  useDrawing,
   useMethodResult,
   useNoise,
   useRender,
@@ -17,6 +18,7 @@ const GlobalContextProvider = (props) => {
     cellsData: useCellsData(),
     methodResult: useMethodResult(),
     render: useRender(),
+    drawing: useDrawing(),
   };
 
   return (
