@@ -3,7 +3,7 @@ from numpy.random import rand
 import numpy as np
 
 class Genetic_Algorithm:
-    def __init__(self, matrix, radius, count, bits_number = 8, iterarions_number = 400, pop_number = 400, crossover_ratio = 0.7, tournament_memb = 16, eps = 0.01, sensor_chance = 1.0):
+    def __init__(self, matrix, radius, count, bits_number = 8, iterarions_number = 200, pop_number = 150, crossover_ratio = 0.7, tournament_memb = 16, eps = 0.01, sensor_chance = 1.0):
         borders = []
         for i in range(count):
             borders.append([0, (len(matrix[0]) - 1)])
@@ -174,7 +174,7 @@ class Genetic_Algorithm:
             decoded = [self.decode(p) for p in population]
             fitnes = [self.function(d) for d in decoded]
             for i in range(self.pop_number):
-                if fitnes[i] > best_fitnes:
+                if fitnes[i] >= best_fitnes:
                     best, best_fitnes = population[i], fitnes[i]
                     self.best_Sol_Send(best, best_fitnes, generation)
 
