@@ -32,36 +32,68 @@ class Genetic_Algorithm:
         chance_matrix = [[0.0] * matrix_length_col for _ in
                          range(matrix_length_row)]  # initialize and fill 2d array with 0
 
+        sensor_area_offset = []
+
+        # find how big is inscribed square so we won't check all off the cells
+        # side of the inscribed square is d / sqrt(2), but we need to add 1 that isn't considered in the radius variable
+        square_side = ((radius * 2 + 1) / np.sqrt(2))
+
+        square_arm = np.round((square_side - 1) / 2).astype(np.int64)
+
+        # add the inscribed square
+        for row in range(-square_arm, square_arm + 1):
+            for col in range(-square_arm, square_arm + 1):
+                sensor_area_offset.append([row, col])
+
+        # add left side of the circle
+        for row in range(-radius, radius + 1):
+            for col in range(-radius, -square_arm):
+                # (x-x1)^2 + (y-y2)^2 = distance^2; where x=0, y=0
+                # '+ radius' needed to make the area look more similar to a circle
+                if row * row + col * col <= radius * radius + radius:
+                    sensor_area_offset.append([row, col])
+
+        # add top side
+        for row in range(-radius, -square_arm):
+            for col in range(-radius, radius + 1):
+                if row * row + col * col <= radius * radius + radius:
+                    sensor_area_offset.append([row, col])
+
+        # add right side
+        for row in range(-radius, radius + 1):
+            for col in range(square_arm, radius + 1):
+                if row * row + col * col <= radius * radius + radius:
+                    sensor_area_offset.append([row, col])
+
+        # add bottom side
+        for row in range(square_arm, radius + 1):
+            for col in range(-radius, radius + 1):
+                if row * row + col * col <= radius * radius + radius:
+                    sensor_area_offset.append([row, col])
+
         for coordinates_xy in coordinates:
-            sensor_row = coordinates_xy[0]  # sensor coordinates
+            # sensor coordinates
+            sensor_row = coordinates_xy[0]
             sensor_col = coordinates_xy[1]
 
-            border_row = sensor_row + radius  # sensor radius borders
-            border_col = sensor_col + radius
+            for i in sensor_area_offset:
+                row = i[0] + sensor_row
+                col = i[1] + sensor_col
+                if 0 <= row < matrix_length_row and 0 <= col < matrix_length_col:  # if the cell exists in array
+                    if chance_matrix[row][col] < 1:  # if the chance of actuation isn't 1 already
+                        current_cell = matrix[row][col]
 
-            cell_row = sensor_row - radius
-            while cell_row <= border_row:  # checking every cell in sensor radius
-                if 0 <= cell_row < matrix_length_col:
-                    cell_col = sensor_col - radius
+                        # the calculation formula (subject to change)
+                        cell_coefficient = (current_cell[0] + current_cell[1]) / 2
 
-                    while cell_col <= border_col:
-                        if 0 <= cell_col < matrix_length_row:
-                            if chance_matrix[cell_col][cell_row] < 1:  # if the chance of actuation isn't 1 already
-                                current_cell = matrix[cell_col][cell_row]
+                        # delete old value, calculate with new chance coefficient
+                        k = k - chance_matrix[row][col] * cell_coefficient
+                        chance_matrix[row][col] += chance
 
-                                # the calculation formula (subject to change)
-                                cell_coefficient = (current_cell[0] + current_cell[1]) / 2
+                        if chance_matrix[row][col] > 1:
+                            chance_matrix[row][col] = 1
+                        k = k + chance_matrix[row][col] * cell_coefficient
 
-                                # delete old value, calculate with new chance coefficient
-                                k = k - chance_matrix[cell_col][cell_row] * cell_coefficient
-                                chance_matrix[cell_col][cell_row] += chance
-
-                                if chance_matrix[cell_col][cell_row] > 1:
-                                    chance_matrix[cell_col][cell_row] = 1
-
-                                k = k + chance_matrix[cell_col][cell_row] * cell_coefficient
-                        cell_col += 1
-                cell_row += 1
         chance_matrix.append(k)
         return chance_matrix
 
