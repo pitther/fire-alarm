@@ -94,6 +94,15 @@ class Genetic_Algorithm:
                             chance_matrix[row][col] = 1
                         k = k + chance_matrix[row][col] * cell_coefficient
 
+        # penalty function
+        non_zero_k = 0
+        for row in chance_matrix:
+            for col in row:
+                if col > 0:
+                    non_zero_k += 1
+
+        k = k + non_zero_k * 0.0000001  # multiplying by small value to not greatly affect the result
+
         chance_matrix.append(k)
         return chance_matrix
 
