@@ -61,12 +61,12 @@ class Genetic_Algorithm:
 
         # add right side
         for row in range(-radius, radius + 1):
-            for col in range(square_arm, radius + 1):
+            for col in range(square_arm + 1, radius + 1):
                 if row * row + col * col <= radius * radius + radius:
                     sensor_area_offset.append([row, col])
 
         # add bottom side
-        for row in range(square_arm, radius + 1):
+        for row in range(square_arm + 1, radius + 1):
             for col in range(-radius, radius + 1):
                 if row * row + col * col <= radius * radius + radius:
                     sensor_area_offset.append([row, col])
