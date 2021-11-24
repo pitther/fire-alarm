@@ -208,7 +208,7 @@ const Canvas = () => {
             },
             x: sizeX * alarm.x + sizeX / 2,
             y: sizeY * alarm.y + sizeY / 2,
-            sizeX: alarm.r * sizeX - sizeX / 2,
+            sizeX: (alarm.r + 1) * sizeX - sizeX / 2,
           });
         });
 
