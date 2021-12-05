@@ -3,7 +3,7 @@ from numpy.random import rand
 import numpy as np
 
 class Genetic_Algorithm:
-    def __init__(self, matrix, radius, count, bits_number = 8, iterarions_number = 200, pop_number = 150, crossover_ratio = 0.7, tournament_memb = 16, eps = 0.01, sensor_chance = 1.0):
+    def __init__(self, matrix, radius, count, bits_number = 8, iterarions_number = 500, pop_number = 50, crossover_ratio = 0.8, tournament_memb = 4, eps = 0.01, sensor_chance = 1.0):
         borders = []
         for i in range(count):
             borders.append([0, (len(matrix[0]) - 1)])
@@ -22,12 +22,14 @@ class Genetic_Algorithm:
         self.eps = eps
         self.pop_best = list()
         self.sensor_chance = sensor_chance
+        self.min_matrix = min(map(max, matrix[1]))
+
 
     def calculate_coefficient(self, matrix, coordinates, radius, chance=1.0):
         k = 0  # efficiency of the current sensors positioning
         matrix_length_col = len(matrix[0])
         matrix_length_row = len(matrix)
-
+        min_value = 0
         # chance the sensor will actuate for the given cell
         chance_matrix = [[0.0] * matrix_length_col for _ in
                          range(matrix_length_row)]  # initialize and fill 2d array with 0
@@ -95,15 +97,16 @@ class Genetic_Algorithm:
                         k = k + chance_matrix[row][col] * cell_coefficient
 
         # penalty function
-        non_zero_k = 0
+        zero_k = 0
+        sum = 0
         for row in chance_matrix:
             for col in row:
-                if col > 0:
-                    non_zero_k += 1
-
-        k = k + non_zero_k * 0.0000001  # multiplying by small value to not greatly affect the result
+                if col == 0:
+                    zero_k += 1
+        k = k - 0.2*zero_k * (0.0000001+self.min_matrix)  # multiplying by small value to not greatly affect the result
 
         chance_matrix.append(k)
+
         return chance_matrix
 
     def function(self, x):
