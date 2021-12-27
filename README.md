@@ -1,6 +1,12 @@
 # Fire-alarm
 fire-alarm genetic algorithm
 
+## Stack:
+#### Front: ```React, AntD, Pixi.js```
+#### Back: ```Flask```
+
+## UI:
+![Preview](/preview.jpg)
 
 # How to run docker-compose?
 
