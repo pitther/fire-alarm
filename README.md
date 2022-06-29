@@ -1,3 +1,5 @@
+Live demo: https://fire-alarm.vercel.app
+
 # Fire-alarm
 fire-alarm genetic algorithm
 
